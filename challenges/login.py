@@ -36,8 +36,7 @@ def check_login(username, password):
     """Return the matching username, or None. THIS IS THE VULNERABLE PART."""
     con = _fresh_db()
     try:
-        query = (
-            "SELECT username FROM users WHERE username = 'admin'--' AND password = 'anything'"
+        query = ( "SELECT username FROM users WHERE username = ? AND password = ?"
         )
         row = con.execute(query).fetchone()
         return row[0] if row else None
