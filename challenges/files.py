@@ -30,15 +30,28 @@ def index():
     return f"<h1>files</h1><ul>{links}</ul>"
 
 
+import os
+
 def download(request):
     name = request.args.get("name", "")
-    # THIS IS THE VULNERABLE PART: `name` is trusted and joined straight on.
-    path = os.path.join(PUBLIC_DIR, name)
+        
+        # 1. Join the path and resolve the absolute, canonical real path
+    path = os.path.realpath(os.path.join(PUBLIC_DIR, name))
+        
+        # 2. Ensure PUBLIC_DIR is also fully resolved and add a trailing slash 
+        # to prevent partial name matching (e.g., /public vs /public_fake)
+    base_dir = os.path.realpath(PUBLIC_DIR)
+        
+        # 3. Verify the resolved path starts with the base directory
+    if not path.startswith(base_dir + os.sep) and path != base_dir:
+        return _not_found() # Or return "Forbidden", 403 depending on your app design
+
     try:
         with open(path, "rb") as f:
             body = f.read()
     except (OSError, ValueError):
-        return _not_found()
+            return _not_found()
+            
     return (body, 200, {"Content-Type": "text/plain; charset=utf-8"})
 
 
