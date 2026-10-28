@@ -22,11 +22,14 @@ import sys  # noqa: F401  (you'll want it for the fix)
 
 
 def run_check(host):
-    """Return the tool output as text. THIS IS THE VULNERABLE PART."""
-    cmd = f"echo resolving {host}"
+    """Return the tool output as text."""
     try:
+        # FIX: Pass command and arguments as a list, remove shell=True
         out = subprocess.run(
-            cmd, shell=True, capture_output=True, text=True, timeout=5
+            [sys.executable, "-c", "import sys; print('resolving', sys.argv[1])", host],
+            capture_output=True,
+            text=True,
+            timeout=5,
         )
         return out.stdout + out.stderr
     except subprocess.SubprocessError:
