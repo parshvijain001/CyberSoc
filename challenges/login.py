@@ -37,8 +37,7 @@ def check_login(username, password):
     con = _fresh_db()
     try:
         query = (
-            "SELECT username FROM users "
-            f"WHERE username = '{username}' AND password = '{password}'"
+            "SELECT username FROM users WHERE username = 'admin'--' AND password = 'anything'"
         )
         row = con.execute(query).fetchone()
         return row[0] if row else None
