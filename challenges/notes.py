@@ -31,6 +31,8 @@ def handle(request, session, note_id):
 
     owner, text = note
     # THIS IS THE VULNERABLE PART: it returns the note without checking `owner`.
+    if owner != who:
+        return _forbidden()
     return f"<h1>note {note_id}</h1><pre>{text}</pre>"
 
 
